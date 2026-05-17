@@ -25,7 +25,7 @@ class Engin(models.Model):
 
         ('loue', 'Loué'),
 
-        ('maintenance', 'Maintenance'),
+        ('en_maintenance', 'En maintenance'),
     )
 
     nom = models.CharField(

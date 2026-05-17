@@ -29,8 +29,6 @@ interface Engin {
 
     etat: string;
 
-    statut_location: string;
-
     reservations: Reservation[];
 }
 
@@ -83,7 +81,7 @@ function EnginsList() {
 
                 engin.categorie_nom.toLowerCase().includes(searchLower) ||
 
-                engin.statut_location.toLowerCase().includes(searchLower)
+                engin.etat.toLowerCase().includes(searchLower)
             );
         });
 
@@ -227,15 +225,15 @@ function EnginsList() {
 
                                                 <span
                                                     className={`px-4 py-2 rounded-full text-sm font-medium ${
-                                                        engin.statut_location === "disponible"
-                                                            ? "bg-green-100 text-green-700"
-                                                            : engin.statut_location === "maintenance"
-                                                            ? "bg-yellow-100 text-yellow-700"
-                                                            : "bg-red-100 text-red-700"
+                                                        engin.etat === "disponible"
+                                                    ? "bg-green-100 text-green-700"
+                                                    : engin.etat === "en_maintenance"
+                                                    ? "bg-orange-100 text-orange-700"
+                                                    : "bg-red-100 text-red-700"
                                                     }`}
                                                 >
 
-                                                    {engin.statut_location}
+                                                    {engin.etat}
 
                                                 </span>
 

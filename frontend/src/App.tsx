@@ -13,7 +13,8 @@ import LocationsList from "./pages/locations/LocationsList";
 import AddLocation from "./pages/locations/AddLocation";
 import PaiementsList from "./pages/paiements/PaiementsList";
 import AddPaiement from "./pages/paiements/AddPaiement";
-
+import MaintenancesList from "./pages/maintenances/MaintenancesList";
+import AddMaintenance from "./pages/maintenances/AddMaintenance";
 
 function App() {
 
@@ -80,6 +81,16 @@ function App() {
                 path="/paiements/add"
                 element={<AddPaiement />}
                 />
+
+                <Route
+                path="/maintenances"
+                element={<MaintenancesList />}
+                />
+
+                <Route
+                path="/maintenances/add"
+                element={<AddMaintenance />}
+                />  
             </Routes>
 
         </BrowserRouter>
