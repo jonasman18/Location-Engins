@@ -20,6 +20,7 @@ urlpatterns = [
     path('api/', include('detail_locations.urls')),
     path('api/', include('paiements.urls')),
     path('api/', include('factures.urls')),
+    path('api/', include('recus.urls')),
 ]
 
 # gestion des fichiers media (images)

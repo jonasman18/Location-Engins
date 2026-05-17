@@ -149,6 +149,9 @@ const formatDate = (
                                 <th className="text-left px-6 py-4">
                                     Date
                                 </th>
+                                <th className="text-left px-6 py-4">
+                                    Paiement
+                                </th>
 
                             </tr>
 
@@ -206,6 +209,17 @@ const formatDate = (
                                             }
 
                                         </td>
+                                        <a
+    href={`http://127.0.0.1:8000/api/recus/${paiement.id}/`}
+    target="_blank"
+    rel="noreferrer"
+    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-sm"
+>
+
+    Reçu
+
+</a>
+
 
                                     </tr>
                                 )
