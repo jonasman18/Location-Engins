@@ -296,7 +296,7 @@ export default function HomePage() {
 
                     <div className="space-y-2 text-slate-400">
 
-                        <p>Antananarivo, Madagascar</p>
+                        <p>Madagascar</p>
 
                         <p>contact@location-engins.com</p>
 

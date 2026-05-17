@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import api from "../../api/axios";
+import toast from "react-hot-toast";
 
 import { useNavigate } from "react-router-dom";
 
@@ -95,9 +96,9 @@ useEffect(() => {
                 }
             );
 
-            alert(
-                "Maintenance enregistrée"
-            );
+                toast.success(
+                    "Maintenance enregistrée"
+                );
 
             navigate(
                 "/maintenances"

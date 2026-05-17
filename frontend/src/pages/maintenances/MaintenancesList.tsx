@@ -255,32 +255,64 @@ function MaintenancesList() {
 
                                             <td className="px-6 py-5">
 
-                                                {maintenance.statut ===
-                                                "en_cours" && (
+                                                <div className="flex gap-2">
 
-                                                    <button
-                                                        onClick={() =>
-                                                            terminerMaintenance(
-                                                                maintenance.id
-                                                            )
-                                                        }
-                                                        className="
-                                                            bg-green-600
-                                                            hover:bg-green-700
-                                                            text-white
-                                                            px-4
-                                                            py-2
-                                                            rounded-xl
-                                                            text-sm
-                                                        "
+                                                {/* MODIFIER */}
+
+                                                <Link
+                                                     to={`/maintenances/edit/${maintenance.id}`}
                                                     >
 
-                                                        Terminer
+                                                <button
+                                                    className="
+                                                        bg-blue-600
+                                                        hover:bg-blue-700
+                                                        text-white
+                                                        px-4
+                                                        py-2
+                                                        rounded-xl
+                                                        text-sm
+                                                    "
+                                                >
 
-                                                    </button>
-                                                )}
+                                                    Modifier
+
+                                                </button>
+
+                                                    </Link>
+
+                                                    {/* TERMINER */}
+
+                                                    {maintenance.statut ===
+                                                    "en_cours" && (
+
+                                                        <button
+                                                            onClick={() =>
+                                                                terminerMaintenance(
+                                                                    maintenance.id
+                                                                )
+                                                            }
+                                                            className="
+                                                                bg-green-600
+                                                                hover:bg-green-700
+                                                                text-white
+                                                                px-4
+                                                                py-2
+                                                                rounded-xl
+                                                                text-sm
+                                                            "
+                                                        >
+
+                                                            Terminer
+
+                                                        </button>
+                                                    )}
+
+                                                </div>
 
                                             </td>
+
+                                            
 
                                         </tr>
                                     )

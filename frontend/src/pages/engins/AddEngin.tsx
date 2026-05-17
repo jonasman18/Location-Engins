@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import api from "../../api/axios";
-
+import toast from "react-hot-toast";
 
 interface Categorie {
 
@@ -90,7 +90,7 @@ function AddEngin() {
 
             await api.post('engins/', formData);
 
-            alert('Engin ajouté avec succès');
+            toast.success('Engin ajouté avec succès');
 
             setFormData({
                 nom: '',
@@ -104,7 +104,7 @@ function AddEngin() {
 
             console.log(error);
 
-            alert("Erreur lors de l'ajout");
+            toast.error("Erreur lors de l'ajout");
         }
     };
 

@@ -15,6 +15,8 @@ import PaiementsList from "./pages/paiements/PaiementsList";
 import AddPaiement from "./pages/paiements/AddPaiement";
 import MaintenancesList from "./pages/maintenances/MaintenancesList";
 import AddMaintenance from "./pages/maintenances/AddMaintenance";
+import EditMaintenance from "./pages/maintenances/EditMaintenance";
+import EditEngin from "./pages/engins/EditEngin";
 
 function App() {
 
@@ -51,6 +53,10 @@ function App() {
                 <Route
                     path="/engins/add"
                     element={<AddEngin />}
+                />
+                <Route
+                    path="/engins/edit/:id"
+                    element={<EditEngin />}
                 />
                 <Route
                     path="/clients"
@@ -91,6 +97,10 @@ function App() {
                 path="/maintenances/add"
                 element={<AddMaintenance />}
                 />  
+                <Route
+                path="/maintenances/edit/:id"
+                element={<EditMaintenance />}
+                />
             </Routes>
 
         </BrowserRouter>

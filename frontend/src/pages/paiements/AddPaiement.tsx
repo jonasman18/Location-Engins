@@ -6,6 +6,7 @@ import {
     useState
 } from "react";
 
+import toast from "react-hot-toast";
 import api from "../../api/axios";
 
 import {
@@ -269,9 +270,7 @@ function AddPaiement() {
                     }
                 );
 
-                alert(
-                    "Paiement enregistré"
-                );
+                toast.success("Paiement enregistré");
 
                 navigate(
                     "/paiements"
@@ -281,9 +280,7 @@ function AddPaiement() {
 
                 console.log(error);
 
-                alert(
-                    "Erreur lors du paiement"
-                );
+                toast.error("Erreur lors du paiement");
 
             } finally {
 

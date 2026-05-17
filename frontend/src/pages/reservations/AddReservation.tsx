@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import api from "../../api/axios";
-
+import toast from "react-hot-toast";
 
 interface Client {
 
@@ -246,7 +246,7 @@ export default function AddReservation() {
                 formData
             );
 
-            alert(
+            toast.success(
                 "Réservation créée avec succès"
             );
 
@@ -269,7 +269,7 @@ export default function AddReservation() {
 
             console.log(error);
 
-            alert(
+            toast.error(
                 "Erreur lors de la réservation"
             );
         }

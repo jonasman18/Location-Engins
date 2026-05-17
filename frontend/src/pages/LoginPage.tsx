@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import api from "../api/axios";
+import toast from "react-hot-toast";
 
 
 function LoginPage() {
@@ -13,60 +14,68 @@ function LoginPage() {
 
     const [password, setPassword] = useState<string>("");
 
-    const [error, setError] = useState<string>("");
 
 
-    const handleSubmit = async (
-        e: React.FormEvent<HTMLFormElement>
-    ) => {
+        const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+) => {
 
-        e.preventDefault();
+    e.preventDefault();
 
-        setError("");
+    try {
 
-        try {
-
-            const response = await api.post(
-                "users/login/",
-                {
-                    email,
-                    password,
-                }
-            );
-
-            localStorage.setItem(
-                "access",
-                response.data.access
-            );
-
-            localStorage.setItem(
-                "refresh",
-                response.data.refresh
-            );
-
-            localStorage.setItem(
-                "role",
-                response.data.role
-            );
-
-            if (response.data.role === "admin") {
-
-                navigate("/admin-dashboard");
-
-            } else {
-
-                navigate("/client-dashboard");
+        const response = await api.post(
+            "users/login/",
+            {
+                email,
+                password,
             }
+        );
 
-        } catch (err) {
+        localStorage.setItem(
+            "access",
+            response.data.access
+        );
 
-            setError(
-                "Email ou mot de passe incorrect"
+        localStorage.setItem(
+            "refresh",
+            response.data.refresh
+        );
+
+        localStorage.setItem(
+            "role",
+            response.data.role
+        );
+
+        toast.success(
+            "Connexion réussie"
+        );
+
+        if (
+            response.data.role ===
+            "admin"
+        ) {
+
+            navigate(
+                "/admin-dashboard"
             );
 
-            console.log(err);
+        } else {
+
+            navigate(
+                "/client-dashboard"
+            );
         }
-    };
+
+    } catch (err) {
+
+        toast.error(
+            "Email ou mot de passe incorrect"
+        );
+
+        console.log(err);
+    }
+};
 
 
     return (
@@ -80,15 +89,6 @@ function LoginPage() {
                     Connexion
 
                 </h1>
-
-                {error && (
-
-                    <div className="bg-red-100 text-red-700 p-3 rounded-xl mb-5">
-
-                        {error}
-
-                    </div>
-                )}
 
                 <form
                     onSubmit={handleSubmit}
