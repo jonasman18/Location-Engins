@@ -1,9 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-
 import api from "../../api/axios";
-
 import { Link } from "react-router-dom";
-
 
 interface Reservation {
 
@@ -15,7 +12,6 @@ interface Reservation {
 
     statut: string;
 }
-
 
 interface Engin {
 
@@ -32,13 +28,22 @@ interface Engin {
     reservations: Reservation[];
 }
 
-
 function EnginsList() {
 
-    const [engins, setEngins] = useState<Engin[]>([]);
+    const [engins, setEngins] =
+        useState<Engin[]>([]);
 
-    const [search, setSearch] = useState<string>('');
+    const [search, setSearch] =
+        useState<string>("");
 
+    // =========================================
+    // PAGINATION
+    // =========================================
+
+    const [currentPage, setCurrentPage] =
+        useState(1);
+
+    const itemsPerPage = 3;
 
     // =========================================
     // FETCH ENGINS
@@ -50,7 +55,8 @@ function EnginsList() {
 
             try {
 
-                const response = await api.get('engins/');
+                const response =
+                    await api.get("engins/");
 
                 setEngins(response.data);
 
@@ -64,7 +70,6 @@ function EnginsList() {
 
     }, []);
 
-
     // =========================================
     // FILTRAGE
     // =========================================
@@ -73,20 +78,67 @@ function EnginsList() {
 
         return engins.filter((engin) => {
 
-            const searchLower = search.toLowerCase();
+            const searchLower =
+                search.toLowerCase();
 
             return (
 
-                engin.nom.toLowerCase().includes(searchLower) ||
+                engin.nom
+                    .toLowerCase()
+                    .includes(searchLower)
 
-                engin.categorie_nom.toLowerCase().includes(searchLower) ||
+                ||
 
-                engin.etat.toLowerCase().includes(searchLower)
+                engin.categorie_nom
+                    .toLowerCase()
+                    .includes(searchLower)
+
+                ||
+
+                engin.etat
+                    .toLowerCase()
+                    .includes(searchLower)
             );
         });
 
     }, [engins, search]);
 
+    // =========================================
+    // PAGINATION LOGIC
+    // =========================================
+
+    const totalPages =
+        Math.ceil(
+            filteredEngins.length /
+            itemsPerPage
+        );
+
+    const startIndex =
+        (currentPage - 1) *
+        itemsPerPage;
+
+    const currentEngins =
+        filteredEngins.slice(
+            startIndex,
+            startIndex + itemsPerPage
+        );
+
+    // =========================================
+    // PAGE CHANGE
+    // =========================================
+
+    const handlePageChange = (
+        page: number
+    ) => {
+
+        if (
+            page >= 1 &&
+            page <= totalPages
+        ) {
+
+            setCurrentPage(page);
+        }
+    };
 
     return (
 
@@ -117,7 +169,17 @@ function EnginsList() {
                     <Link to="/engins/add">
 
                         <button
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl transition font-medium shadow-sm"
+                            className="
+                                bg-blue-600
+                                hover:bg-blue-700
+                                text-white
+                                px-6
+                                py-3
+                                rounded-2xl
+                                transition
+                                font-medium
+                                shadow-sm
+                            "
                         >
 
                             Ajouter Engin
@@ -128,7 +190,6 @@ function EnginsList() {
 
                 </div>
 
-
                 {/* RECHERCHE */}
 
                 <div className="bg-white rounded-3xl shadow-sm p-5 mb-6">
@@ -137,12 +198,28 @@ function EnginsList() {
                         type="text"
                         placeholder="Rechercher..."
                         value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="w-full border border-slate-300 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-blue-500"
+                        onChange={(e) => {
+
+                            setSearch(
+                                e.target.value
+                            );
+
+                            setCurrentPage(1);
+                        }}
+                        className="
+                            w-full
+                            border
+                            border-slate-300
+                            rounded-2xl
+                            px-5
+                            py-4
+                            outline-none
+                            focus:ring-2
+                            focus:ring-blue-500
+                        "
                     />
 
                 </div>
-
 
                 {/* TABLE */}
 
@@ -176,20 +253,29 @@ function EnginsList() {
                                         Réservations
                                     </th>
 
+                                    <th className="text-left px-6 py-4">
+                                        Action
+                                    </th>
+
                                 </tr>
 
                             </thead>
 
-
                             <tbody>
 
-                                {filteredEngins.length > 0 ? (
+                                {currentEngins.length > 0 ? (
 
-                                    filteredEngins.map((engin) => (
+                                    currentEngins.map((engin) => (
 
                                         <tr
                                             key={engin.id}
-                                            className="border-b border-slate-100 hover:bg-slate-50 transition align-top"
+                                            className="
+                                                border-b
+                                                border-slate-100
+                                                hover:bg-slate-50
+                                                transition
+                                                align-top
+                                            "
                                         >
 
                                             {/* NOM */}
@@ -200,7 +286,6 @@ function EnginsList() {
 
                                             </td>
 
-
                                             {/* CATEGORIE */}
 
                                             <td className="px-6 py-4 text-slate-600">
@@ -208,7 +293,6 @@ function EnginsList() {
                                                 {engin.categorie_nom}
 
                                             </td>
-
 
                                             {/* PRIX */}
 
@@ -218,19 +302,26 @@ function EnginsList() {
 
                                             </td>
 
-
                                             {/* ETAT */}
 
                                             <td className="px-6 py-4">
 
                                                 <span
-                                                    className={`px-4 py-2 rounded-full text-sm font-medium ${
-                                                        engin.etat === "disponible"
-                                                    ? "bg-green-100 text-green-700"
-                                                    : engin.etat === "en_maintenance"
-                                                    ? "bg-orange-100 text-orange-700"
-                                                    : "bg-red-100 text-red-700"
-                                                    }`}
+                                                    className={`
+                                                        px-4
+                                                        py-2
+                                                        rounded-full
+                                                        text-sm
+                                                        font-medium
+
+                                                        ${
+                                                            engin.etat === "disponible"
+                                                            ? "bg-green-100 text-green-700"
+                                                            : engin.etat === "en_maintenance"
+                                                            ? "bg-orange-100 text-orange-700"
+                                                            : "bg-red-100 text-red-700"
+                                                        }
+                                                    `}
                                                 >
 
                                                     {engin.etat}
@@ -239,28 +330,44 @@ function EnginsList() {
 
                                             </td>
 
-
                                             {/* RESERVATIONS */}
 
                                             <td className="px-6 py-4">
 
                                                 {engin.reservations.length > 0 ? (
 
-                                                    <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
+                                                    <div className="space-y-2">
 
                                                         {engin.reservations.map(
-                                                            (reservation, index) => (
+                                                            (
+                                                                reservation,
+                                                                index
+                                                            ) => (
 
                                                                 <div
                                                                     key={index}
-                                                                    className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm"
+                                                                    className="
+                                                                        bg-slate-50
+                                                                        border
+                                                                        border-slate-200
+                                                                        rounded-xl
+                                                                        px-3
+                                                                        py-2
+                                                                        text-sm
+                                                                    "
                                                                 >
 
                                                                     <p className="text-slate-500 text-xs">
 
-                                                                        {reservation.date_debut}
-                                                                        {" "}→{" "}
-                                                                        {reservation.date_fin}
+                                                                        {
+                                                                            reservation.date_debut
+                                                                        }
+
+                                                                        {" → "}
+
+                                                                        {
+                                                                            reservation.date_fin
+                                                                        }
 
                                                                     </p>
 
@@ -281,25 +388,34 @@ function EnginsList() {
 
                                             </td>
 
-                                            <Link to={`/engins/edit/${engin.id}`}>
+                                            {/* ACTION */}
 
-    <button
-        className="
-            bg-blue-600
-            hover:bg-blue-700
-            text-white
-            px-4
-            py-2
-            rounded-xl
-            text-sm
-        "
-    >
+                                            <td className="px-6 py-4">
 
-        Modifier
+                                                <Link
+                                                    to={`/engins/edit/${engin.id}`}
+                                                >
 
-    </button>
+                                                    <button
+                                                        className="
+                                                            bg-blue-600
+                                                            hover:bg-blue-700
+                                                            text-white
+                                                            px-4
+                                                            py-2
+                                                            rounded-xl
+                                                            text-sm
+                                                            transition
+                                                        "
+                                                    >
 
-</Link>
+                                                        Modifier
+
+                                                    </button>
+
+                                                </Link>
+
+                                            </td>
 
                                         </tr>
                                     ))
@@ -309,8 +425,12 @@ function EnginsList() {
                                     <tr>
 
                                         <td
-                                            colSpan={5}
-                                            className="text-center py-10 text-slate-500"
+                                            colSpan={6}
+                                            className="
+                                                text-center
+                                                py-10
+                                                text-slate-500
+                                            "
                                         >
 
                                             Aucun engin trouvé
@@ -327,6 +447,110 @@ function EnginsList() {
                     </div>
 
                 </div>
+
+                {/* PAGINATION */}
+
+                {filteredEngins.length > 0 && (
+
+                    <div className="flex justify-center items-center gap-3 mt-8">
+
+                        {/* PREVIOUS */}
+
+                        <button
+                            onClick={() =>
+                                handlePageChange(
+                                    currentPage - 1
+                                )
+                            }
+                            disabled={
+                                currentPage === 1
+                            }
+                            className="
+                                w-11
+                                h-11
+                                rounded-xl
+                                bg-slate-800
+                                hover:bg-slate-900
+                                disabled:bg-slate-300
+                                text-white
+                                text-lg
+                                transition
+                            "
+                        >
+
+                            ←
+
+                        </button>
+
+                        {/* PAGE NUMBERS */}
+
+                        {[...Array(totalPages)].map(
+                            (_, index) => {
+
+                                const page =
+                                    index + 1;
+
+                                return (
+
+                                    <button
+                                        key={page}
+                                        onClick={() =>
+                                            handlePageChange(
+                                                page
+                                            )
+                                        }
+                                        className={`
+                                            w-11
+                                            h-11
+                                            rounded-xl
+                                            font-medium
+                                            transition
+
+                                            ${
+                                                currentPage === page
+                                                ? "bg-blue-600 text-white"
+                                                : "bg-white text-slate-700 hover:bg-slate-200"
+                                            }
+                                        `}
+                                    >
+
+                                        {page}
+
+                                    </button>
+                                );
+                            }
+                        )}
+
+                        {/* NEXT */}
+
+                        <button
+                            onClick={() =>
+                                handlePageChange(
+                                    currentPage + 1
+                                )
+                            }
+                            disabled={
+                                currentPage === totalPages
+                            }
+                            className="
+                                w-11
+                                h-11
+                                rounded-xl
+                                bg-blue-600
+                                hover:bg-blue-700
+                                disabled:bg-slate-300
+                                text-white
+                                text-lg
+                                transition
+                            "
+                        >
+
+                            →
+
+                        </button>
+
+                    </div>
+                )}
 
             </div>
 

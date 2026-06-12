@@ -32,17 +32,17 @@ function LoginPage() {
             }
         );
 
-        localStorage.setItem(
+        sessionStorage.setItem(
             "access",
             response.data.access
         );
 
-        localStorage.setItem(
+        sessionStorage.setItem(
             "refresh",
             response.data.refresh
         );
 
-        localStorage.setItem(
+        sessionStorage.setItem(
             "role",
             response.data.role
         );

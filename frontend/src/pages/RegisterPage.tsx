@@ -1,8 +1,14 @@
 import { useState } from "react";
+
 import api from "../api/axios";
-import { Link } from "react-router-dom";
+
+import { Link, useNavigate } from "react-router-dom";
+
+import toast from "react-hot-toast";
 
 export default function RegisterPage() {
+
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
 
@@ -15,7 +21,10 @@ export default function RegisterPage() {
     });
 
     const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+        e: React.ChangeEvent<
+            HTMLInputElement |
+            HTMLTextAreaElement
+        >
     ) => {
 
         setFormData({
@@ -32,14 +41,19 @@ export default function RegisterPage() {
 
         e.preventDefault();
 
-        if(formData.password !== formData.confirmPassword){
+        if (
+            formData.password !==
+            formData.confirmPassword
+        ) {
 
-            alert("Les mots de passe ne correspondent pas");
+            toast.error(
+                "Les mots de passe ne correspondent pas"
+            );
 
             return;
         }
 
-        try{
+        try {
 
             await api.post(
                 'users/register/',
@@ -52,13 +66,24 @@ export default function RegisterPage() {
                 }
             );
 
-            alert("Compte créé avec succès");
+            toast.success(
+                "Compte créé avec succès"
+            );
 
-        }catch(error){
+            // REDIRECTION
+            setTimeout(() => {
+
+                navigate("/");
+
+            }, 1500);
+
+        } catch (error) {
 
             console.log(error);
 
-            alert("Erreur lors de l'inscription");
+            toast.error(
+                "Erreur lors de l'inscription"
+            );
         }
     };
 

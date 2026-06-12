@@ -2,6 +2,15 @@ from rest_framework import serializers
 
 from .models import Utilisateur
 
+from rest_framework_simplejwt.serializers import (
+    TokenObtainPairSerializer
+)
+
+
+# =========================================================
+# USER SERIALIZER
+# =========================================================
+
 class UtilisateurSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -9,6 +18,11 @@ class UtilisateurSerializer(serializers.ModelSerializer):
         model = Utilisateur
 
         fields = '__all__'
+
+
+# =========================================================
+# REGISTER SERIALIZER
+# =========================================================
 
 class RegisterSerializer(serializers.ModelSerializer):
 
@@ -30,7 +44,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             'password',
         ]
 
-
     def create(self, validated_data):
 
         password = validated_data.pop('password')
@@ -44,3 +57,32 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+
+
+# =========================================================
+# LOGIN SERIALIZER JWT
+# =========================================================
+
+class CustomTokenObtainPairSerializer(
+    TokenObtainPairSerializer
+):
+
+    @classmethod
+    def get_token(cls, user):
+
+        token = super().get_token(user)
+
+        token['role'] = user.role
+        token['email'] = user.email
+
+        return token
+
+    def validate(self, attrs):
+
+        data = super().validate(attrs)
+
+        data['role'] = self.user.role
+        data['email'] = self.user.email
+        data['nom'] = self.user.nom
+
+        return data

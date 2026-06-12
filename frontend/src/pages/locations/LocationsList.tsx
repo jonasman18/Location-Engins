@@ -1,6 +1,6 @@
 // src/pages/locations/LocationsList.tsx
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import api from "../../api/axios";
 
@@ -19,7 +19,6 @@ interface DetailLocation {
 
     prix_total: string;
 }
-
 
 interface LocationType {
 
@@ -51,9 +50,17 @@ function LocationsList() {
     const [search, setSearch] =
         useState("");
 
+    // =========================================
+    // PAGINATION
+    // =========================================
+
+    const [currentPage, setCurrentPage] =
+        useState(1);
+
+    const itemsPerPage = 2;
 
     // =========================================
-    // FETCH LOCATIONS
+    // FETCH
     // =========================================
 
     useEffect(() => {
@@ -63,13 +70,9 @@ function LocationsList() {
             try {
 
                 const response =
-                    await api.get(
-                        "locations/"
-                    );
+                    await api.get("locations/");
 
-                setLocations(
-                    response.data
-                );
+                setLocations(response.data);
 
             } catch (error) {
 
@@ -81,13 +84,13 @@ function LocationsList() {
 
     }, []);
 
-
     // =========================================
     // FILTER
     // =========================================
 
-    const filteredLocations =
-        locations.filter(
+    const filteredLocations = useMemo(() => {
+
+        return locations.filter(
             (location) =>
 
                 location.utilisateur_nom
@@ -97,6 +100,27 @@ function LocationsList() {
                     )
         );
 
+    }, [locations, search]);
+
+    // =========================================
+    // PAGINATION LOGIC
+    // =========================================
+
+    const totalPages =
+        Math.ceil(
+            filteredLocations.length /
+            itemsPerPage
+        );
+
+    const startIndex =
+        (currentPage - 1) *
+        itemsPerPage;
+
+    const currentLocations =
+        filteredLocations.slice(
+            startIndex,
+            startIndex + itemsPerPage
+        );
 
     // =========================================
     // STATUS STYLE
@@ -125,7 +149,6 @@ function LocationsList() {
                 return "bg-slate-100 text-slate-700";
         }
     };
-
 
     return (
 
@@ -156,7 +179,17 @@ function LocationsList() {
                     <Link to="/locations/add">
 
                         <button
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl transition shadow-sm"
+                            className="
+                                bg-blue-600
+                                hover:bg-blue-700
+                                text-white
+                                px-6
+                                py-3
+                                rounded-2xl
+                                transition
+                                shadow-sm
+                                font-medium
+                            "
                         >
 
                             Nouvelle Location
@@ -167,25 +200,36 @@ function LocationsList() {
 
                 </div>
 
-
                 {/* SEARCH */}
 
                 <div className="bg-white rounded-3xl shadow-sm p-5 mb-6">
 
                     <input
                         type="text"
-                        placeholder="Rechercher par client..."
+                        placeholder="Rechercher client..."
                         value={search}
-                        onChange={(e) =>
+                        onChange={(e) => {
+
                             setSearch(
                                 e.target.value
-                            )
-                        }
-                        className="w-full border border-slate-300 rounded-2xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            );
+
+                            setCurrentPage(1);
+                        }}
+                        className="
+                            w-full
+                            border
+                            border-slate-300
+                            rounded-2xl
+                            px-5
+                            py-4
+                            focus:outline-none
+                            focus:ring-2
+                            focus:ring-blue-500
+                        "
                     />
 
                 </div>
-
 
                 {/* TABLE */}
 
@@ -200,198 +244,210 @@ function LocationsList() {
                                 <tr>
 
                                     <th className="text-left px-6 py-4">
-
                                         Client
-
                                     </th>
 
                                     <th className="text-left px-6 py-4">
-
                                         Période
-
                                     </th>
 
                                     <th className="text-left px-6 py-4">
-
                                         Statut
-
                                     </th>
 
                                     <th className="text-left px-6 py-4">
-
                                         Engins
-
                                     </th>
 
                                     <th className="text-left px-6 py-4">
-
                                         Montant
-
                                     </th>
 
                                     <th className="text-left px-6 py-4">
                                         Facture
                                     </th>
 
-
                                 </tr>
 
                             </thead>
 
-
                             <tbody>
 
-                                {filteredLocations.map(
-                                    (location) => (
+                                {currentLocations.length > 0 ? (
 
-                                        <tr
-                                            key={location.id}
-                                            className="border-b border-slate-100 hover:bg-slate-50 transition align-top"
-                                        >
+                                    currentLocations.map(
+                                        (location) => (
 
-                                            {/* CLIENT */}
+                                            <tr
+                                                key={location.id}
+                                                className="
+                                                    border-b
+                                                    border-slate-100
+                                                    hover:bg-slate-50
+                                                    transition
+                                                    align-top
+                                                "
+                                            >
 
-                                            <td className="px-6 py-5 font-semibold text-slate-800">
+                                                {/* CLIENT */}
 
-                                                {
-                                                    location.utilisateur_nom
-                                                }
-
-                                            </td>
-
-
-                                            {/* DATE */}
-
-                                            <td className="px-6 py-5 text-slate-600">
-
-                                                <div>
+                                                <td className="px-6 py-4 font-semibold text-slate-800">
 
                                                     {
-                                                        location.date_debut
+                                                        location.utilisateur_nom
                                                     }
 
-                                                </div>
+                                                </td>
 
-                                                <div className="text-sm text-slate-400">
+                                                {/* DATE */}
 
-                                                    au
+                                                <td className="px-6 py-4 text-slate-600 whitespace-nowrap">
 
-                                                </div>
+                                                    <div className="flex items-center gap-2 text-sm">
 
-                                                <div>
+                                                        <span>
+                                                            {location.date_debut}
+                                                        </span>
 
-                                                    {
-                                                        location.date_fin
-                                                    }
+                                                        <span className="text-slate-400">
+                                                            →
+                                                        </span>
 
-                                                </div>
+                                                        <span>
+                                                            {location.date_fin}
+                                                        </span>
 
-                                            </td>
+                                                    </div>
 
+                                                </td>
 
-                                            {/* STATUS */}
+                                                {/* STATUS */}
 
-                                            <td className="px-6 py-5">
+                                                <td className="px-6 py-4">
 
-                                                <span
-                                                    className={`px-4 py-2 rounded-full text-sm font-medium ${getStatusStyle(
-                                                        location.statut
-                                                    )}`}
-                                                >
+                                                    <span
+                                                        className={`
+                                                            px-4
+                                                            py-2
+                                                            rounded-full
+                                                            text-sm
+                                                            font-medium
+                                                            ${getStatusStyle(
+                                                                location.statut
+                                                            )}
+                                                        `}
+                                                    >
 
-                                                    {
-                                                        location.statut
-                                                    }
+                                                        {
+                                                            location.statut
+                                                        }
 
-                                                </span>
+                                                    </span>
 
-                                            </td>
+                                                </td>
 
+                                                {/* ENGINS */}
 
-                                            {/* ENGINS */}
+                                                <td className="px-6 py-4">
 
-                                            <td className="px-6 py-5">
+                                                    <div className="space-y-2">
 
-                                                <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
+                                                        {(location.details || []).map(
+                                                            (
+                                                                detail
+                                                            ) => (
 
-                                                    {(location.details || []).map(
-                                                        (
-                                                            detail
-                                                        ) => (
-
-                                                            <div
-                                                                key={
-                                                                    detail.id
-                                                                }
-                                                                className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2"
-                                                            >
-
-                                                                <div className="font-medium text-slate-700 text-sm">
-
-                                                                    {
-                                                                        detail.engin_nom
+                                                                <div
+                                                                    key={
+                                                                        detail.id
                                                                     }
+                                                                    className="
+                                                                        bg-slate-50
+                                                                        border
+                                                                        border-slate-200
+                                                                        rounded-xl
+                                                                        px-3
+                                                                        py-2
+                                                                    "
+                                                                >
+
+                                                                    <div className="font-medium text-slate-700 text-sm">
+
+                                                                        {
+                                                                            detail.engin_nom
+                                                                        }
+
+                                                                    </div>
+
+                                                                    <div className="text-xs text-slate-500 mt-1">
+
+                                                                        {
+                                                                            detail.prix_total
+                                                                        }
+                                                                        {" Ar"}
+
+                                                                    </div>
 
                                                                 </div>
+                                                            )
+                                                        )}
 
-                                                                <div className="text-xs text-slate-500 mt-1">
+                                                    </div>
 
-                                                                    {
-                                                                        detail.prix_total
-                                                                    }
-                                                                    {" Ar"}
+                                                </td>
 
-                                                                </div>
+                                                {/* TOTAL */}
 
-                                                            </div>
-                                                        )
-                                                    )}
+                                                <td className="px-6 py-4 font-bold text-blue-700 whitespace-nowrap">
 
-                                                </div>
+                                                    {
+                                                        location.montant_total
+                                                    }
+                                                    {" Ar"}
 
-                                            </td>
+                                                </td>
 
+                                                {/* FACTURE */}
 
-                                            {/* TOTAL */}
+                                                <td className="px-6 py-4">
 
-                                            <td className="px-6 py-5 font-bold text-blue-700 whitespace-nowrap">
+                                                    <a
+                                                        href={`http://127.0.0.1:8000/api/factures/${location.id}/`}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="
+                                                            bg-blue-600
+                                                            hover:bg-blue-700
+                                                            text-white
+                                                            px-4
+                                                            py-2
+                                                            rounded-xl
+                                                            text-sm
+                                                            transition
+                                                        "
+                                                    >
 
-                                                {
-                                                    location.montant_total
-                                                }
-                                                {" Ar"}
+                                                        PDF
 
-                                            </td>
+                                                    </a>
 
-                                            <td className="px-6 py-5">
+                                                </td>
 
-    <a
-        href={`http://127.0.0.1:8000/api/factures/${location.id}/`}
-        target="_blank"
-        rel="noreferrer"
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm"
-    >
-
-        PDF
-
-    </a>
-
-</td>
-
-                                        </tr>
+                                            </tr>
+                                        )
                                     )
-                                )}
 
-
-                                {/* EMPTY */}
-
-                                {filteredLocations.length === 0 && (
+                                ) : (
 
                                     <tr>
 
                                         <td
-                                            colSpan={5}
-                                            className="text-center py-10 text-slate-400"
+                                            colSpan={6}
+                                            className="
+                                                text-center
+                                                py-10
+                                                text-slate-400
+                                            "
                                         >
 
                                             Aucune location trouvée
@@ -408,6 +464,111 @@ function LocationsList() {
                     </div>
 
                 </div>
+
+                {/* PAGINATION */}
+
+                {filteredLocations.length > 0 && (
+
+                    <div className="flex justify-center items-center gap-3 mt-8">
+
+                        <button
+                            onClick={() =>
+                                setCurrentPage(
+                                    currentPage - 1
+                                )
+                            }
+                            disabled={
+                                currentPage === 1
+                            }
+                            className="
+                                w-12
+                                h-12
+                                rounded-2xl
+                                bg-slate-800
+                                hover:bg-slate-900
+                                disabled:bg-slate-300
+                                text-white
+                                text-lg
+                                transition
+                            "
+                        >
+
+                            ←
+
+                        </button>
+
+                        {Array.from(
+                            { length: totalPages },
+                            (_, index) => {
+
+                                const page =
+                                    index + 1;
+
+                                return (
+
+                                    <button
+                                        key={page}
+                                        onClick={() =>
+                                            setCurrentPage(
+                                                page
+                                            )
+                                        }
+                                        className={`
+                                            w-12
+                                            h-12
+                                            rounded-2xl
+                                            font-medium
+                                            transition
+                                            ${
+                                                currentPage === page
+                                                    ? `
+                                                        bg-blue-600
+                                                        text-white
+                                                      `
+                                                    : `
+                                                        bg-white
+                                                        text-slate-700
+                                                        hover:bg-slate-200
+                                                      `
+                                            }
+                                        `}
+                                    >
+
+                                        {page}
+
+                                    </button>
+                                );
+                            }
+                        )}
+
+                        <button
+                            onClick={() =>
+                                setCurrentPage(
+                                    currentPage + 1
+                                )
+                            }
+                            disabled={
+                                currentPage === totalPages
+                            }
+                            className="
+                                w-12
+                                h-12
+                                rounded-2xl
+                                bg-blue-600
+                                hover:bg-blue-700
+                                disabled:bg-slate-300
+                                text-white
+                                text-lg
+                                transition
+                            "
+                        >
+
+                            →
+
+                        </button>
+
+                    </div>
+                )}
 
             </div>
 
